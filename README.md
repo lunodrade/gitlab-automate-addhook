@@ -1,0 +1,1 @@
+# gitlab-automate-addhook
