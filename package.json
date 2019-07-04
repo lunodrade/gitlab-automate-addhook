@@ -1,0 +1,28 @@
+{
+    "name": "gitlab-automate-addhook",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lunodrade/gitlab-automate-addhook.git"
+    },
+    "keywords": [
+        "gitlab",
+        "nodejs",
+        "webhook",
+        "automate"
+    ],
+    "author": "Luciano Andrade",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lunodrade/gitlab-automate-addhook/issues"
+    },
+    "homepage": "https://github.com/lunodrade/gitlab-automate-addhook#readme",
+    "dependencies": {
+        "request": "github:request/request"
+    }
+}
