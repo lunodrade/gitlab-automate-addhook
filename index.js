@@ -3,38 +3,126 @@
  *********************************************************************/
 const request = require('request');
 
-const gitlabUrl = 'https://gitlab.com';
+const gitlabUrl = 'http://10.167.1.7';              //or http://gitlab.com
 const gitlabUser = 'lunodrade';
 const gitlabToken = '';
-const hookUrl = 'https://webhook.site/d0752bc9-b0c5-440a-9c2c-a7f078789b3c';
+const hookUrl = '';
+
+const doUserProjects = false;                       //self projects
+const doUserGroups = true;                          //Only owner gitlab (gitlab self hosted)
 
 /**********************************************************************
-* Função chamada ao retornar a resposta do request GET* 
+*   → para usuário
 *********************************************************************/
-var userProjects;
-//Configurações do request
-urlUser = gitlabUrl+'/api/v4/users/'+gitlabUser+'/projects'
-const options = {
-    url: urlUser,
-    headers: {
-        'PRIVATE-TOKEN': gitlabToken
+function updateUserProjects() {
+    //Configurações do request
+    urlUser = gitlabUrl+'/api/v4/users/'+gitlabUser+'/projects'
+    const optionsUserProjects = {
+        url: urlUser,
+        headers: {
+            'PRIVATE-TOKEN': gitlabToken
+        }
+    };
+    //
+    function callbackUserProjects(error, response, body) {
+        //Se não tiver erros e o site retornou reposta válida
+        if (!error && response.statusCode == 200) {
+            //Tranfosrmar sua resposta em JSON
+            var json = JSON.parse(body);
+            //
+            json.forEach(project => {
+                checkHooks(project['id']);
+                console.log(project['id']);
+            });
+        }
     }
-};
-//
-function callback(error, response, body) {
-    //Se não tiver erros e o site retornou reposta válida
-    if (!error && response.statusCode == 200) {
-        //Tranfosrmar sua resposta em JSON
-        userProjects = JSON.parse(body);
-        //
-        userProjects.forEach(project => {
-            checkHooks(project['id']);
-            console.log(project['id']);
-        });
-    }
+    //Chama o request GET do kanban
+    request(optionsUserProjects, callbackUserProjects); 
 }
-//Chama o request GET do kanban
-request(options, callback);    
+if(doUserProjects) {
+    updateUserProjects();
+}
+/**********************************************************************
+*   → para grupos
+*********************************************************************/
+function updateUserGroups() {
+    var userGroupsID = [];
+    //Configurações do request
+    urlGroups = gitlabUrl + '/api/v4/groups';
+
+    const optionsUserGroups = {
+        url: urlGroups,
+        headers: {
+            'PRIVATE-TOKEN': gitlabToken
+        }
+    };
+    //
+    function callbackUserGroups(error, response, body) {
+        //Se não tiver erros e o site retornou reposta válida
+        if (!error && response.statusCode == 200) {
+            //Tranfosrmar sua resposta em JSON
+            var json = JSON.parse(body);
+            
+            json.forEach(group => {
+                //if(group['visibility'] == 'private') {
+                    var projId = group['id'];
+                    userGroupsID.push(projId);
+                //}
+                //TODO: LER DO SUBGRUPO TAMBÉM
+            });
+
+            console.log("GRUPOS → " + userGroupsID);
+
+            userGroupsID.forEach(groupID => {
+                checkProjects(groupID);
+            });
+
+        }
+    }
+    //Chama o request GET do kanban
+    request(optionsUserGroups, callbackUserGroups);  
+}
+if(doUserGroups) {
+    updateUserGroups();
+}
+/**********************************************************************
+* 
+*********************************************************************/
+function checkProjects(groupID) {
+    var userProjectsID = [];
+    //Configurações do request
+    urlProject = gitlabUrl + '/api/v4/groups/' + groupID;
+
+    const optionsProjects = {
+        url: urlProject,
+        headers: {
+            'PRIVATE-TOKEN': gitlabToken
+        }
+    };
+    //
+    function callbackProjects(error, response, body) {
+        //Se não tiver erros e o site retornou reposta válida
+        if (!error && response.statusCode == 200) {
+            //Tranfosrmar sua resposta em JSON
+            var json = JSON.parse(body);
+            
+            json['projects'].forEach(project => {
+                var projId = project['id'];
+                userProjectsID.push(projId);
+            });
+
+            console.log("PROJETOS → " + userProjectsID);
+
+            userProjectsID.forEach(projectID => {
+                //projectid
+                checkHooks(projectID);
+            });
+
+        }
+    }
+    //Chama o request GET do kanban
+    request(optionsProjects, callbackProjects);  
+}
     
 /**********************************************************************
 * 
@@ -53,7 +141,6 @@ function checkHooks(projectID) {
             //Tranfosrmar sua resposta em JSON
             const body = JSON.parse(resp);
             
-            console.log("========================================================");
             var has = false;
             body.forEach(hook => {
                 if(hook['url'] == hookUrl) {
