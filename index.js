@@ -2,14 +2,15 @@
  * Carregar bibliotecas
  *********************************************************************/
 const request = require('request');
+const Config = require("./config.json");
 
-const gitlabUrl = 'http://10.167.1.7';              //or http://gitlab.com
-const gitlabUser = 'lunodrade';
-const gitlabToken = '';
-const hookUrl = '';
+const gitlabUrl = Config['gitlabUrl'];                               //or http://gitlab.com
+const gitlabUser = Config['gitlabUser']; 
+const gitlabToken = Config['gitlabToken'];
+const hookUrl = Config['hookUrl'];;
 
-const doUserProjects = false;                       //self projects
-const doUserGroups = true;                          //Only owner gitlab (gitlab self hosted)
+const doUserProjects = Config['doUserProjects'];                      //self projects
+const doUserGroups = Config['doUserGroups'];                          //Only owner gitlab (gitlab self hosted)
 
 /**********************************************************************
 *   → para usuário

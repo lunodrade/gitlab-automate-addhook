@@ -1,0 +1,10 @@
+{
+    "gitlabToken": "COLOQUE-AQUI-SEU-GITLAB-ACCESS-TOKEN-API",
+
+    "gitlabUser": "lunodrade",
+    "gitlabUrl": "http://10.167.1.7",
+    "hookUrl": "COLOQUE-AQUI-O-HOOK-TARGET",
+
+    "doUserProjects": false,
+    "doUserGroups": true
+}
