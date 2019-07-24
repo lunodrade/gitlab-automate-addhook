@@ -11,6 +11,7 @@ const hookUrl = Config['hookUrl'];
 
 const doUserProjects = Config['doUserProjects']; //self projects
 const doUserGroups = Config['doUserGroups']; //Only owner gitlab (gitlab self hosted)
+const doUserProjectsSelfHosted = Config['doUserProjectsSelfHosted']; //Only owner gitlab (projects by users)
 
 /**********************************************************************
  *   → para usuário
@@ -87,6 +88,47 @@ function updateUserGroups() {
 }
 if (doUserGroups) {
   updateUserGroups();
+}
+
+/**********************************************************************
+ *   → para usuários e self hosted gitlab
+ *********************************************************************/
+function updateUserProjectsSelfHosted() {
+  var userProjID = [];
+  //Configurações do request
+  urlGroups = gitlabUrl + '/api/v4/projects';
+
+  const optionsUserProjectsSelfHosted = {
+    url: urlGroups,
+    headers: {
+      'PRIVATE-TOKEN': gitlabToken
+    }
+  };
+  //
+  function callbackUserProjectsSelfHosted(error, response, body) {
+    //Se não tiver erros e o site retornou reposta válida
+    if (!error && response.statusCode == 200) {
+      //Tranfosrmar sua resposta em JSON
+      var json = JSON.parse(body);
+
+      //console.log('\n\n');
+      json.forEach(proj => {
+        if (proj['namespace']['kind'] == 'user') {
+          userProjID.push(proj['id']);
+        }
+      });
+      console.log('PROJETOS DE USERS → ' + userProjID);
+      //console.log('\n\n');
+      userProjID.forEach(projID => {
+        checkHooks(projID);
+      });
+    }
+  }
+  //Chama o request GET do kanban
+  request(optionsUserProjectsSelfHosted, callbackUserProjectsSelfHosted);
+}
+if (doUserProjectsSelfHosted) {
+  updateUserProjectsSelfHosted();
 }
 /**********************************************************************
  *

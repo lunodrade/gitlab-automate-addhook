@@ -1,10 +1,11 @@
 {
-    "gitlabToken": "COLOQUE-AQUI-SEU-GITLAB-ACCESS-TOKEN-API",
+  "gitlabToken": "COLOQUE-AQUI-SEU-GITLAB-ACCESS-TOKEN-API",
 
-    "gitlabUser": "lunodrade",
-    "gitlabUrl": "http://10.167.1.7",
-    "hookUrl": "COLOQUE-AQUI-O-HOOK-TARGET",
+  "gitlabUser": "lunodrade",
+  "gitlabUrl": "http://10.167.1.7",
+  "hookUrl": "COLOQUE-AQUI-O-HOOK-TARGET",
 
-    "doUserProjects": false,
-    "doUserGroups": true
+  "doUserProjects": false,
+  "doUserGroups": true,
+  "doUserProjectsSelfHosted": true
 }
